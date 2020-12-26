@@ -7,7 +7,7 @@ import random
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 import abcutils
 
-model = tf.keras.models.load_model('work_model/1')
+model = tf.keras.models.load_model('model_abc/1')
 
 
 def outLayerImage():
@@ -71,4 +71,18 @@ def outGenImage():
         train_datagen.next()
 
 
-outGenImage()
+(train_datagen, test_datagen, input_shape) = abcutils.getAbcGen()
+
+
+label, count = np.unique(train_datagen.labels, return_counts=True)
+print(label, count)
+fig = plt.figure()
+plt.bar(label, count, width=0.7, align='center')
+plt.title("Label Distribution")
+plt.xlabel("Label")
+plt.ylabel("Count")
+plt.xticks(label)
+plt.ylim(0, 7500)
+for a, b in zip(label, count):
+    plt.text(a, b, '%d' % b, ha='center', va='bottom', fontsize=10)
+plt.show()
