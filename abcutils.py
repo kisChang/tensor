@@ -11,6 +11,7 @@ TRAIN_DATA_DIR_ABC = "E:\\jupyter_tensor\\abc-data\\abc\\train\\"
 TEST_DATA_DIR_ABC = "E:\\jupyter_tensor\\abc-data\\abc\\test\\"
 TRAIN_DATA_DIR_01 = "E:\\jupyter_tensor\\abc-data\\01\\train\\"
 TEST_DATA_DIR_01 = "E:\\jupyter_tensor\\abc-data\\01\\test\\"
+BATCH_SIZE = 50
 
 
 def print_result(path):
@@ -31,14 +32,14 @@ def getAbcGen(genDataDir=None):
                                  # shear_range=0.2
                                  )
     train_datagen = datagen.flow_from_directory(TRAIN_DATA_DIR_ABC,
-                                                batch_size=10, shuffle=True,
+                                                batch_size=BATCH_SIZE, shuffle=True,
                                                 class_mode='categorical',
                                                 color_mode='grayscale',
                                                 save_to_dir=genDataDir, save_prefix='gen',
                                                 classes=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
                                                 target_size=(90, 90))
     test_datagen = datagen.flow_from_directory(TEST_DATA_DIR_ABC,
-                                               batch_size=20, shuffle=True,
+                                               batch_size=BATCH_SIZE, shuffle=True,
                                                class_mode='categorical',
                                                color_mode='grayscale',
                                                save_to_dir=genDataDir, save_prefix='gen',
@@ -55,14 +56,14 @@ def get01Gen(genDataDir=None):
                                  # shear_range=0.2
                                  )
     train_datagen = datagen.flow_from_directory(TRAIN_DATA_DIR_01,
-                                                batch_size=10, shuffle=True,
+                                                batch_size=BATCH_SIZE, shuffle=True,
                                                 class_mode='categorical',
                                                 color_mode='grayscale',
                                                 save_to_dir=genDataDir, save_prefix='gen',
                                                 classes=['0', '1'],
                                                 target_size=(90, 90))
     test_datagen = datagen.flow_from_directory(TEST_DATA_DIR_01,
-                                               batch_size=20, shuffle=True,
+                                               batch_size=BATCH_SIZE, shuffle=True,
                                                class_mode='categorical',
                                                color_mode='grayscale',
                                                save_to_dir=genDataDir, save_prefix='gen',
@@ -83,21 +84,29 @@ def initGpu():
 # 模型定义
 def defineModel(num_classes, input_shape):
     model = tf.keras.models.Sequential([
-        tf.keras.layers.Conv2D(filters=32, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
-        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
-        tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
-        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
-        tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
-        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
-        tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
-        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
-        tf.keras.layers.Dropout(0.2),
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(1024, activation="relu"),
-        tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Dense(num_classes, activation="softmax")
+        # 3-9956 - 13 - 20201225-100940
+        # tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Dropout(0.2),
+        # tf.keras.layers.Flatten(),
+        # tf.keras.layers.Dense(num_classes, activation="softmax")
 
-        # 1-9929 - 13 - 20201224-173243
+        # 3-9926 - 12 - 20201225-090110
+        # tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Dropout(0.2),
+        # tf.keras.layers.Flatten(),
+        # tf.keras.layers.Dense(1024, activation="relu"),
+        # tf.keras.layers.Dropout(0.5),
+        # tf.keras.layers.Dense(num_classes, activation="softmax")
+
+        # 2-9878 - 11 - 20201224-181718
         # tf.keras.layers.Conv2D(filters=32, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
         # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
         # tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
@@ -106,9 +115,39 @@ def defineModel(num_classes, input_shape):
         # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
         # tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
         # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
-        # tf.keras.layers.Dropout(0.1),
+        # tf.keras.layers.Dropout(0.2),
         # tf.keras.layers.Flatten(),
-        # tf.keras.layers.Dense(640, activation="relu"),
+        # tf.keras.layers.Dense(1024, activation="relu"),
+        # tf.keras.layers.Dropout(0.5),
+        # tf.keras.layers.Dense(num_classes, activation="softmax")
+
+        # 1-9929 - 13 - 20201224-173243
+        tf.keras.layers.Conv2D(filters=32, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
+        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
+        tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        tf.keras.layers.Dropout(0.1),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(640, activation="relu"),
+        tf.keras.layers.Dropout(0.3),
+        tf.keras.layers.Dense(num_classes, activation="softmax")
+
+        # bak-4-9978 - 14 - 20201225-150619
+
+        # bak-5- -  - 20201225-163838
+        # tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu', input_shape=input_shape),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Conv2D(filters=64, kernel_size=(3, 3), activation='relu'),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Conv2D(filters=128, kernel_size=(3, 3), activation='relu'),
+        # tf.keras.layers.MaxPool2D(pool_size=(2, 2)),
+        # tf.keras.layers.Dropout(0.2),
+        # tf.keras.layers.Flatten(),
+        # tf.keras.layers.Dense(1024, activation="relu"),
         # tf.keras.layers.Dropout(0.3),
         # tf.keras.layers.Dense(num_classes, activation="softmax")
     ])
@@ -116,24 +155,21 @@ def defineModel(num_classes, input_shape):
     return model
 
 
-def startFit(model, train_datagen, test_datagen, callbacks):
-    import datetime
-    log_dir = "logs-fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+def startFit(model, train_datagen, test_datagen, callbacks, log_dir_arg=None):
+    if log_dir_arg is not None:
+        log_dir = log_dir_arg
+    else:
+        import datetime
+        log_dir = os.path.join("logs-fit", datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    # 测试中 9980 但是准确率只有14
-    # model.compile(optimizer=tf.keras.optimizers.SGD(lr=0.001), loss='binary_crossentropy', metrics=['accuracy'])
-    # 测试到了 9966 准确 16
-    # model.compile(optimizer=tf.keras.optimizers.Adam(), loss='binary_crossentropy', metrics=['accuracy'])
-    # 这个上不去了 准确17
-    # 9746 5
     model.compile(optimizer=tf.keras.optimizers.Adam(), loss=tf.keras.losses.categorical_crossentropy, metrics=['accuracy'])
     return model.fit(
         train_datagen,
-        steps_per_epoch=3000,
-        epochs=5000, verbose=2,
+        steps_per_epoch=1000,
+        epochs=100, verbose=2,
         validation_data=test_datagen,
-        validation_steps=1000,
+        validation_steps=200,
         callbacks=[
             tensorboard_callback,
             callbacks])
